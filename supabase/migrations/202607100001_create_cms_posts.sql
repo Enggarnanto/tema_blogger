@@ -6,6 +6,7 @@ create table if not exists public.cms_posts (
   content_html text not null default '',
   excerpt text,
   labels text[] not null default '{}',
+  meta_keyword text,
   location_name text,
   status text not null default 'draft' check (status in ('draft', 'published', 'scheduled')),
   publish_at timestamptz,

@@ -7,6 +7,7 @@ type CmsPost = {
   content_html: string;
   excerpt?: string;
   labels?: string[];
+  meta_keyword?: string | null;
   location_name?: string | null;
   status?: "draft" | "published" | "scheduled";
   publish_at?: string | null;
@@ -44,12 +45,13 @@ Deno.serve(async (req) => {
     const bloggerPayload = {
       kind: "blogger#post",
       title: post.title,
-      content: post.content_html,
+      content: buildBloggerContent(post),
       labels: post.labels || [],
       location: buildBloggerLocation(post),
       customMetaData: JSON.stringify({
         slug: post.slug || "",
         excerpt: post.excerpt || "",
+        meta_keyword: normalizeMetaKeyword(post.meta_keyword || ""),
         source_post_id: post.id || "",
       }),
     };
@@ -129,6 +131,29 @@ async function getGoogleAccessToken() {
 function validatePost(post: CmsPost) {
   if (!post.title?.trim()) throw new Error("Title is required");
   if (!post.content_html?.trim()) throw new Error("Content is required");
+}
+
+function buildBloggerContent(post: CmsPost) {
+  const metaKeyword = normalizeMetaKeyword(post.meta_keyword || "");
+  if (!metaKeyword) return post.content_html;
+
+  return `<meta name="keywords" content="${escapeHtmlAttribute(metaKeyword)}">\n${post.content_html}`;
+}
+
+function normalizeMetaKeyword(value: string) {
+  return value
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean)
+    .join(", ");
+}
+
+function escapeHtmlAttribute(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function buildBloggerLocation(post: CmsPost) {

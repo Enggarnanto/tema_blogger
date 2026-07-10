@@ -51,6 +51,7 @@ const els = {
   excerptCount: document.getElementById("excerptCount"),
   excerptWarning: document.getElementById("excerptWarning"),
   labels: document.getElementById("labelsInput"),
+  metaKeyword: document.getElementById("metaKeywordInput"),
   status: document.getElementById("statusInput"),
   publishAt: document.getElementById("publishAtInput"),
   wordCount: document.getElementById("wordCount"),
@@ -121,7 +122,7 @@ function bindEvents() {
   els.statusFilter.addEventListener("change", renderPostList);
   els.categoryFilter.addEventListener("change", renderPostList);
 
-  [els.title, els.slug, els.excerpt, els.labels, els.status, els.publishAt, els.locationName].forEach((input) => {
+  [els.title, els.slug, els.excerpt, els.labels, els.metaKeyword, els.status, els.publishAt, els.locationName].forEach((input) => {
     input.addEventListener("input", handleChange);
   });
 
@@ -312,6 +313,8 @@ function readForm() {
   state.post.excerpt = limitText(els.excerpt.value.trim(), EXCERPT_MAX_LENGTH);
   els.excerpt.value = state.post.excerpt;
   state.post.labels = els.labels.value.split(",").map((label) => label.trim()).filter(Boolean);
+  state.post.meta_keyword = normalizeMetaKeyword(els.metaKeyword.value);
+  els.metaKeyword.value = state.post.meta_keyword;
   state.post.location_name = els.locationName.value.trim();
   state.post.status = els.status.value;
   state.post.publish_at = els.publishAt.value || null;
@@ -325,6 +328,7 @@ function fillForm(post) {
   els.editor.innerHTML = post.content_html || "<p>Tulis artikel di sini...</p>";
   els.excerpt.value = limitText(post.excerpt || "", EXCERPT_MAX_LENGTH);
   els.labels.value = (post.labels || []).join(", ");
+  els.metaKeyword.value = post.meta_keyword || "";
   els.locationName.value = post.location_name || "";
   els.status.value = post.status || "draft";
   els.publishAt.value = toDatetimeLocal(post.publish_at);
@@ -817,6 +821,7 @@ function emptyPost() {
     content_html: "<p>Tulis artikel di sini...</p>",
     excerpt: "",
     labels: [],
+    meta_keyword: "",
     location_name: "",
     status: "draft",
     publish_at: null,
@@ -857,6 +862,7 @@ function toSupabasePayload(post, userId) {
     content_html: post.content_html || "",
     excerpt: limitText(post.excerpt || "", EXCERPT_MAX_LENGTH) || null,
     labels: post.labels || [],
+    meta_keyword: normalizeMetaKeyword(post.meta_keyword || "") || null,
     location_name: post.location_name || null,
     status: post.status || "draft",
     publish_at: post.publish_at || null,
@@ -960,6 +966,14 @@ function stripHtml(html) {
 
 function limitText(value, maxLength) {
   return String(value || "").slice(0, maxLength);
+}
+
+function normalizeMetaKeyword(value) {
+  return String(value || "")
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean)
+    .join(", ");
 }
 
 function formatLocationLabel(post) {
