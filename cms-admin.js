@@ -282,12 +282,13 @@ async function publishPost() {
 
 function saveSettings() {
   state.settings = {
-    supabaseUrl: els.supabaseUrl.value.trim(),
+    supabaseUrl: normalizeSupabaseUrl(els.supabaseUrl.value),
     supabaseAnon: els.supabaseAnon.value.trim(),
     functionUrl: els.functionUrl.value.trim()
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
   getSupabaseClient.instance = null;
+  fillSettings(state.settings);
   refreshConnection();
   showToast("Settings tersimpan.");
 }
@@ -480,6 +481,21 @@ function getSupabaseClient() {
     );
   }
   return getSupabaseClient.instance;
+}
+
+function normalizeSupabaseUrl(value) {
+  const rawValue = value.trim();
+  if (!rawValue) return "";
+
+  try {
+    const url = new URL(rawValue);
+    url.pathname = "";
+    url.search = "";
+    url.hash = "";
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return rawValue.replace(/\/rest\/v1.*$/, "").replace(/\/$/, "");
+  }
 }
 
 async function getSessionToken() {
