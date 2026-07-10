@@ -1,6 +1,7 @@
 const STORAGE_KEY = "blog_cms_current_post";
 const STORAGE_POSTS_KEY = "blog_cms_posts";
 const SETTINGS_KEY = "blog_cms_settings";
+const EXCERPT_MAX_LENGTH = 150;
 const DEFAULT_SETTINGS = {
   supabaseUrl: normalizeSupabaseUrl(window.CMS_CONFIG?.supabaseUrl || ""),
   supabaseAnon: window.CMS_CONFIG?.supabaseAnon || "",
@@ -21,6 +22,7 @@ const els = {
   slug: document.getElementById("slugInput"),
   editor: document.getElementById("contentEditor"),
   excerpt: document.getElementById("excerptInput"),
+  excerptCount: document.getElementById("excerptCount"),
   labels: document.getElementById("labelsInput"),
   status: document.getElementById("statusInput"),
   publishAt: document.getElementById("publishAtInput"),
@@ -145,6 +147,7 @@ function handleChange() {
   readForm();
   persistPost();
   savePostToCollection(state.post);
+  refreshExcerptCount();
   refreshStats();
   renderPreview();
   renderPostList();
@@ -155,7 +158,8 @@ function readForm() {
   state.post.title = els.title.value.trim();
   state.post.slug = els.slug.value.trim();
   state.post.content_html = sanitizeEditorHtml(els.editor.innerHTML);
-  state.post.excerpt = els.excerpt.value.trim();
+  state.post.excerpt = limitText(els.excerpt.value.trim(), EXCERPT_MAX_LENGTH);
+  els.excerpt.value = state.post.excerpt;
   state.post.labels = els.labels.value.split(",").map((label) => label.trim()).filter(Boolean);
   state.post.status = els.status.value;
   state.post.publish_at = els.publishAt.value || null;
@@ -167,10 +171,11 @@ function fillForm(post) {
   els.slug.value = post.slug || "";
   els.slug.dataset.touched = post.slug ? "true" : "";
   els.editor.innerHTML = post.content_html || "<p>Tulis artikel di sini...</p>";
-  els.excerpt.value = post.excerpt || "";
+  els.excerpt.value = limitText(post.excerpt || "", EXCERPT_MAX_LENGTH);
   els.labels.value = (post.labels || []).join(", ");
   els.status.value = post.status || "draft";
   els.publishAt.value = toDatetimeLocal(post.publish_at);
+  refreshExcerptCount();
 }
 
 function fillSettings(settings) {
@@ -469,6 +474,12 @@ function refreshStats() {
   els.charCount.textContent = text.length;
 }
 
+function refreshExcerptCount() {
+  const length = els.excerpt.value.length;
+  els.excerptCount.textContent = `${length}/${EXCERPT_MAX_LENGTH} karakter`;
+  els.excerptCount.classList.toggle("is-limit", length >= EXCERPT_MAX_LENGTH);
+}
+
 function refreshConnection() {
   const connected = Boolean(state.settings.functionUrl && state.settings.supabaseAnon);
   els.connectionDot.classList.toggle("is-connected", connected);
@@ -617,7 +628,7 @@ function toSupabasePayload(post, userId) {
     title: post.title || "Untitled",
     slug: post.slug || null,
     content_html: post.content_html || "",
-    excerpt: post.excerpt || null,
+    excerpt: limitText(post.excerpt || "", EXCERPT_MAX_LENGTH) || null,
     labels: post.labels || [],
     status: post.status || "draft",
     publish_at: post.publish_at || null,
@@ -652,6 +663,10 @@ function stripHtml(html) {
   const template = document.createElement("template");
   template.innerHTML = html || "";
   return template.content.textContent.trim();
+}
+
+function limitText(value, maxLength) {
+  return String(value || "").slice(0, maxLength);
 }
 
 function toDatetimeLocal(value) {
