@@ -37,9 +37,6 @@ const els = {
   previewLocation: document.getElementById("previewLocation"),
   previewContent: document.getElementById("previewContent"),
   locationName: document.getElementById("locationNameInput"),
-  locationLat: document.getElementById("locationLatInput"),
-  locationLng: document.getElementById("locationLngInput"),
-  locationSpan: document.getElementById("locationSpanInput"),
   connectionDot: document.getElementById("connectionDot"),
   connectionText: document.getElementById("connectionText"),
   supabaseUrl: document.getElementById("supabaseUrlInput"),
@@ -86,7 +83,7 @@ function bindEvents() {
 
   els.search.addEventListener("input", renderPostList);
 
-  [els.title, els.slug, els.excerpt, els.labels, els.status, els.publishAt, els.locationName, els.locationLat, els.locationLng, els.locationSpan].forEach((input) => {
+  [els.title, els.slug, els.excerpt, els.labels, els.status, els.publishAt, els.locationName].forEach((input) => {
     input.addEventListener("input", handleChange);
   });
 
@@ -168,9 +165,6 @@ function readForm() {
   els.excerpt.value = state.post.excerpt;
   state.post.labels = els.labels.value.split(",").map((label) => label.trim()).filter(Boolean);
   state.post.location_name = els.locationName.value.trim();
-  state.post.location_lat = parseOptionalNumber(els.locationLat.value);
-  state.post.location_lng = parseOptionalNumber(els.locationLng.value);
-  state.post.location_span = els.locationSpan.value.trim();
   state.post.status = els.status.value;
   state.post.publish_at = els.publishAt.value || null;
   state.post.updated_at = new Date().toISOString();
@@ -184,9 +178,6 @@ function fillForm(post) {
   els.excerpt.value = limitText(post.excerpt || "", EXCERPT_MAX_LENGTH);
   els.labels.value = (post.labels || []).join(", ");
   els.locationName.value = post.location_name || "";
-  els.locationLat.value = formatOptionalNumber(post.location_lat);
-  els.locationLng.value = formatOptionalNumber(post.location_lng);
-  els.locationSpan.value = post.location_span || "";
   els.status.value = post.status || "draft";
   els.publishAt.value = toDatetimeLocal(post.publish_at);
   refreshExcerptCount();
@@ -609,9 +600,6 @@ function emptyPost() {
     excerpt: "",
     labels: [],
     location_name: "",
-    location_lat: null,
-    location_lng: null,
-    location_span: "",
     status: "draft",
     publish_at: null,
     blogger_post_id: null,
@@ -626,8 +614,6 @@ function normalizePost(post) {
     ...emptyPost(),
     ...post,
     labels: Array.isArray(post?.labels) ? post.labels : [],
-    location_lat: parseOptionalNumber(post?.location_lat),
-    location_lng: parseOptionalNumber(post?.location_lng),
     status: post?.status || "draft"
   };
 }
@@ -654,9 +640,6 @@ function toSupabasePayload(post, userId) {
     excerpt: limitText(post.excerpt || "", EXCERPT_MAX_LENGTH) || null,
     labels: post.labels || [],
     location_name: post.location_name || null,
-    location_lat: parseOptionalNumber(post.location_lat),
-    location_lng: parseOptionalNumber(post.location_lng),
-    location_span: post.location_span || null,
     status: post.status || "draft",
     publish_at: post.publish_at || null,
     blogger_post_id: post.blogger_post_id || null,
@@ -696,40 +679,18 @@ function limitText(value, maxLength) {
   return String(value || "").slice(0, maxLength);
 }
 
-function parseOptionalNumber(value) {
-  if (value === null || value === undefined || value === "") return null;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-}
-
-function formatOptionalNumber(value) {
-  const number = parseOptionalNumber(value);
-  return number === null ? "" : String(number);
-}
-
 function formatLocationLabel(post) {
   const location = buildBloggerLocation(post);
   if (!location) return "";
-  if (location.lat !== undefined && location.lng !== undefined) {
-    return `${location.name || "Lokasi"} (${location.lat}, ${location.lng})`;
-  }
   return location.name || "";
 }
 
 function buildBloggerLocation(post) {
   const name = (post.location_name || "").trim();
-  const lat = parseOptionalNumber(post.location_lat);
-  const lng = parseOptionalNumber(post.location_lng);
-  const span = (post.location_span || "").trim();
 
-  if (!name && lat === null && lng === null && !span) return null;
+  if (!name) return null;
 
-  const location = {};
-  if (name) location.name = name;
-  if (lat !== null) location.lat = lat;
-  if (lng !== null) location.lng = lng;
-  if (span) location.span = span;
-  return location;
+  return { name };
 }
 
 function toDatetimeLocal(value) {

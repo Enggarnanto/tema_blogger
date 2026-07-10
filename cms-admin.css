@@ -310,16 +310,6 @@ select {
   margin-bottom: 16px;
 }
 
-.split-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.split-fields .field {
-  margin-bottom: 16px;
-}
-
 .post-list {
   display: grid;
   gap: 8px;
@@ -556,8 +546,4 @@ select {
     padding: 16px;
   }
 
-  .split-fields {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
 }
