@@ -279,6 +279,18 @@ select {
   font-weight: 650;
 }
 
+.field-warning {
+  display: none;
+  color: var(--warning);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.field-warning.is-visible {
+  display: block;
+}
+
 .field input,
 .field textarea,
 .field select {

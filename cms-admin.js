@@ -23,6 +23,7 @@ const els = {
   editor: document.getElementById("contentEditor"),
   excerpt: document.getElementById("excerptInput"),
   excerptCount: document.getElementById("excerptCount"),
+  excerptWarning: document.getElementById("excerptWarning"),
   labels: document.getElementById("labelsInput"),
   status: document.getElementById("statusInput"),
   publishAt: document.getElementById("publishAtInput"),
@@ -476,8 +477,10 @@ function refreshStats() {
 
 function refreshExcerptCount() {
   const length = els.excerpt.value.length;
+  const isLimit = length >= EXCERPT_MAX_LENGTH;
   els.excerptCount.textContent = `${length}/${EXCERPT_MAX_LENGTH} karakter`;
-  els.excerptCount.classList.toggle("is-limit", length >= EXCERPT_MAX_LENGTH);
+  els.excerptCount.classList.toggle("is-limit", isLimit);
+  els.excerptWarning.classList.toggle("is-visible", isLimit);
 }
 
 function refreshConnection() {
