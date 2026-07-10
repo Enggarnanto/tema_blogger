@@ -9,6 +9,20 @@ Checklist sementara untuk menghubungkan `cms-admin.html` dengan Supabase dan Blo
 - [ ] Catat `anon public key` dari `Project Settings` > `API`.
 - [ ] Buat user admin dari `Authentication` > `Users` > `Add user`.
 
+Catatan: kalau Supabase menampilkan instruksi berikut:
+
+```bash
+npm install @supabase/supabase-js @supabase/ssr
+```
+
+Untuk CMS ini belum wajib dijalankan, karena frontend masih berupa HTML statis di GitHub Pages dan sudah memakai Supabase dari CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+```
+
+Package `@supabase/ssr` hanya diperlukan kalau nanti CMS dipindah ke framework SSR seperti Next.js, Nuxt, SvelteKit, atau server-rendered app lain.
+
 ## 2. Setup Database CMS
 
 - [x] Buka `SQL Editor` di Supabase.
