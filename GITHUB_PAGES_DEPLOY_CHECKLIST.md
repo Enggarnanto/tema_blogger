@@ -63,10 +63,10 @@ git push
 
 ## 5. Aktifkan GitHub Pages
 
-- [ ] Buka repository GitHub.
-- [ ] Masuk ke `Settings`.
-- [ ] Masuk ke `Pages`.
-- [ ] Pada `Build and deployment`, pilih:
+- [x] Buka repository GitHub.
+- [x] Masuk ke `Settings`.
+- [x] Masuk ke `Pages`.
+- [x] Pada `Build and deployment`, pilih:
 
 ```text
 Source: Deploy from a branch
@@ -74,8 +74,8 @@ Branch: main
 Folder: /root
 ```
 
-- [ ] Klik `Save`.
-- [ ] Tunggu sampai GitHub memberi URL Pages.
+- [x] Klik `Save`.
+- [x] Tunggu sampai GitHub memberi URL Pages.
 
 Contoh URL:
 
@@ -124,8 +124,8 @@ Jadi GitHub Pages bisa memanggil function Supabase.
 
 ## 9. Tes Setelah Deploy
 
-- [ ] CMS GitHub Pages terbuka.
-- [ ] CSS dan JS berhasil load.
+- [x] CMS GitHub Pages terbuka.
+- [x] CSS dan JS berhasil load.
 - [ ] Settings bisa disimpan.
 - [ ] Login admin berhasil.
 - [ ] Save draft masuk ke Supabase.

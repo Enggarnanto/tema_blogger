@@ -4,22 +4,22 @@ Checklist sementara untuk menghubungkan `cms-admin.html` dengan Supabase dan Blo
 
 ## 1. Setup Project Supabase
 
-- [ ] Buat project baru di Supabase.
+- [x] Buat project baru di Supabase.
 - [ ] Catat `Project URL` dari `Project Settings` > `API`.
 - [ ] Catat `anon public key` dari `Project Settings` > `API`.
 - [ ] Buat user admin dari `Authentication` > `Users` > `Add user`.
 
 ## 2. Setup Database CMS
 
-- [ ] Buka `SQL Editor` di Supabase.
-- [ ] Jalankan isi file:
+- [x] Buka `SQL Editor` di Supabase.
+- [x] Jalankan isi file:
 
 ```text
 supabase/migrations/202607100001_create_cms_posts.sql
 ```
 
-- [ ] Pastikan tabel `cms_posts` muncul di `Table Editor`.
-- [ ] Pastikan RLS aktif dan policy `select`, `insert`, `update`, `delete` sudah ada.
+- [x] Pastikan tabel `cms_posts` muncul di `Table Editor`.
+- [x] Pastikan RLS aktif dan policy `select`, `insert`, `update`, `delete` sudah ada.
 
 ## 3. Jalankan CMS Lokal
 
@@ -124,6 +124,8 @@ Catatan: `GOOGLE_REFRESH_TOKEN` perlu dibuat dari OAuth Google dengan akses Blog
 
 ## Status Sementara
 
+- [ ] GitHub Pages CMS online.
+- [x] Database migration Supabase berhasil.
 - [ ] CRUD lokal jalan.
 - [ ] Login Supabase jalan.
 - [ ] Save draft ke Supabase jalan.
