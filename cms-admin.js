@@ -790,13 +790,16 @@ function toSupabasePayload(post, userId) {
 }
 
 function slugify(value) {
-  return value
+  const baseSlug = value
     .toLowerCase()
     .trim()
+    .replace(/\.html?$/i, "")
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
+
+  return baseSlug ? `${baseSlug}.html` : "";
 }
 
 function sanitizeEditorHtml(html) {
