@@ -651,36 +651,41 @@ function renderPreview() {
 function renderFeeds() {
   const feeds = state.posts
     .map(normalizePost)
-    .filter((post) => post.status === "published" || post.blogger_url || post.blogger_post_id)
     .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
 
-  els.feedCount.textContent = `${feeds.length} published`;
+  els.feedCount.textContent = `${feeds.length} artikel`;
   els.feedList.innerHTML = "";
 
   if (!feeds.length) {
     const empty = document.createElement("p");
     empty.className = "empty-list";
-    empty.textContent = "Belum ada feed uploaded.";
+    empty.textContent = "Belum ada artikel.";
     els.feedList.appendChild(empty);
     return;
   }
 
   feeds.forEach((post) => {
-    const item = document.createElement(post.blogger_url ? "a" : "button");
+    const item = document.createElement("article");
     item.className = "feed-item";
-    if (post.blogger_url) {
-      item.href = post.blogger_url;
-      item.target = "_blank";
-      item.rel = "noopener noreferrer";
-    } else {
-      item.type = "button";
-      item.addEventListener("click", () => selectPost(post.id));
-    }
+    item.tabIndex = 0;
+    item.addEventListener("click", () => selectPost(post.id));
+    item.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectPost(post.id);
+      }
+    });
+
+    const uploadState = post.blogger_url || post.blogger_post_id ? "uploaded" : post.status || "draft";
+    const bloggerLink = post.blogger_url
+      ? `<a class="feed-link" href="${escapeAttribute(post.blogger_url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">Buka Blogger</a>`
+      : "";
 
     item.innerHTML = `
+      <span class="feed-status is-${escapeHtml(uploadState)}">${escapeHtml(uploadState)}</span>
       <strong>${escapeHtml(post.title || "Untitled")}</strong>
       <span>${escapeHtml((post.labels || []).slice(0, 2).join(", ") || "Tanpa kategori")}</span>
-      <small>${escapeHtml(formatDate(post.updated_at))}</small>
+      <small>${escapeHtml(formatDate(post.updated_at))}${bloggerLink}</small>
     `;
     els.feedList.appendChild(item);
   });

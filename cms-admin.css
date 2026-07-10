@@ -657,6 +657,44 @@ select {
   font-size: 12px;
 }
 
+.feed-status {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f6faf9;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.feed-status.is-uploaded,
+.feed-status.is-published {
+  background: rgba(20, 184, 166, 0.2);
+  color: #99f6e4;
+}
+
+.feed-status.is-draft {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fcd34d;
+}
+
+.feed-status.is-scheduled {
+  background: rgba(96, 165, 250, 0.2);
+  color: #bfdbfe;
+}
+
+.feed-link {
+  color: #99f6e4;
+  display: inline-block;
+  margin-left: 8px;
+  text-decoration: none;
+}
+
+.feed-link:hover {
+  text-decoration: underline;
+}
+
 .settings-panel {
   max-width: 720px;
 }
