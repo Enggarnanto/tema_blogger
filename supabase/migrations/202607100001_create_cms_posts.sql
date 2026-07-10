@@ -1,5 +1,5 @@
--- Fresh install schema for the Blogger CMS.
--- If the CMS table already exists, use the later incremental migrations instead.
+-- Blogger CMS database schema.
+-- Run this single file in Supabase SQL Editor for both fresh installs and updates.
 
 create table if not exists public.cms_posts (
   id uuid primary key default gen_random_uuid(),
@@ -18,6 +18,11 @@ create table if not exists public.cms_posts (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.cms_posts
+add column if not exists meta_keyword text,
+add column if not exists location_name text,
+add column if not exists blogger_url text;
 
 alter table public.cms_posts enable row level security;
 
