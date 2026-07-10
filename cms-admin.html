@@ -21,6 +21,7 @@
         <button class="nav-item is-active" type="button" data-view="editor">Editor</button>
         <button class="nav-item" type="button" data-view="preview">Preview</button>
         <button class="nav-item" type="button" data-view="settings">Settings</button>
+        <button class="nav-item" type="button" data-view="readme">README</button>
       </nav>
 
       <div class="status-panel">
@@ -249,6 +250,58 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="view" id="readmeView">
+        <article class="readme-panel">
+          <header class="readme-hero">
+            <p>Blogger CMS Admin</p>
+            <h2>Tool ini dipakai untuk menulis, menyimpan, mengelola, preview, dan publish artikel Blogger dari satu dashboard.</h2>
+          </header>
+
+          <div class="readme-grid">
+            <section>
+              <h3>Fungsi Utama</h3>
+              <ul>
+                <li>Membuat draft artikel dan menyimpannya ke Supabase.</li>
+                <li>Mengedit artikel dengan Editor Visual, Editor Teks/Markdown, atau Kode HTML.</li>
+                <li>Mengelola metadata seperti excerpt, label, meta keyword, lokasi, status, dan publish date.</li>
+                <li>Melihat preview artikel dan status semua artikel, termasuk draft dan yang sudah upload ke Blogger.</li>
+                <li>Mengirim artikel ke Blogger lewat Supabase Edge Function.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3>Alur Pakai</h3>
+              <ol>
+                <li>Login admin dari menu Settings.</li>
+                <li>Klik New atau pilih artikel dari daftar.</li>
+                <li>Tulis konten dan isi metadata.</li>
+                <li>Klik Save Draft untuk menyimpan ke Supabase.</li>
+                <li>Buka Preview untuk cek tampilan dan status artikel.</li>
+                <li>Klik Publish setelah Edge Function Blogger siap.</li>
+              </ol>
+            </section>
+
+            <section>
+              <h3>Integrasi</h3>
+              <ul>
+                <li>GitHub Pages dipakai untuk hosting frontend statis.</li>
+                <li>Supabase dipakai untuk auth admin, database artikel, dan Edge Function.</li>
+                <li>Blogger API dipakai untuk publish artikel ke blog.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3>Keamanan</h3>
+              <ul>
+                <li>Anon key Supabase boleh dipakai di frontend selama RLS aktif.</li>
+                <li>Service role key, Google client secret, dan refresh token tidak boleh masuk frontend.</li>
+                <li>Secret Blogger disimpan di Supabase Secrets.</li>
+              </ul>
+            </section>
+          </div>
+        </article>
       </section>
     </main>
   </div>
