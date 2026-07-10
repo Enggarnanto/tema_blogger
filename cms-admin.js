@@ -10,6 +10,13 @@ const ALLOWED_HTML_TAGS = new Set([
 const ALLOWED_HTML_ATTRIBUTES = {
   a: new Set(["href", "title", "target", "rel"]),
   img: new Set(["src", "alt", "title", "width", "height"]),
+  blockquote: new Set(["style"]),
+  div: new Set(["style"]),
+  h2: new Set(["style"]),
+  h3: new Set(["style"]),
+  h4: new Set(["style"]),
+  li: new Set(["style"]),
+  p: new Set(["style"]),
   table: new Set(["border"]),
   td: new Set(["colspan", "rowspan"]),
   th: new Set(["colspan", "rowspan"])
@@ -180,6 +187,9 @@ function runCommand(command, value) {
   } else if (command === "formatBlock") {
     if (!["h2", "h3", "h4"].includes(value)) return;
     document.execCommand("formatBlock", false, value);
+  } else if (command.startsWith("justify")) {
+    if (!["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"].includes(command)) return;
+    document.execCommand(command, false, null);
   } else {
     document.execCommand(command, false, value || null);
   }
@@ -809,6 +819,7 @@ function sanitizeEditorHtml(html) {
       }
     });
 
+    cleanTextAlignStyle(node);
     cleanSafeUrlAttribute(node, "href");
     cleanSafeUrlAttribute(node, "src");
 
@@ -835,6 +846,19 @@ function cleanSafeUrlAttribute(node, attributeName) {
 
   const safe = /^(https?:|mailto:|tel:|\/|#)/i.test(value);
   if (!safe) node.removeAttribute(attributeName);
+}
+
+function cleanTextAlignStyle(node) {
+  const style = node.getAttribute("style");
+  if (!style) return;
+
+  const match = style.match(/(?:^|;)\s*text-align\s*:\s*(left|center|right|justify)\s*(?:;|$)/i);
+  if (!match) {
+    node.removeAttribute("style");
+    return;
+  }
+
+  node.setAttribute("style", `text-align: ${match[1].toLowerCase()};`);
 }
 
 function formatHtmlCode(html) {
