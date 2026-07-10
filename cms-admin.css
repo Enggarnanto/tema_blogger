@@ -455,8 +455,34 @@ select {
 }
 
 .editor h2,
-.editor h3 {
+.editor h3,
+.editor h4 {
   line-height: 1.25;
+}
+
+.editor table,
+.preview-article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  display: block;
+  overflow-x: auto;
+}
+
+.editor th,
+.editor td,
+.preview-article th,
+.preview-article td {
+  border: 1px solid var(--line);
+  padding: 9px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.editor th,
+.preview-article th {
+  background: #f8fafb;
+  font-weight: 700;
 }
 
 .metric-list {

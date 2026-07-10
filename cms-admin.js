@@ -192,7 +192,8 @@ function convertMarkdownToHtml() {
     return;
   }
 
-  const rawHtml = window.marked.parse(els.markdownInput.value || "", {
+  const markdown = prepareMarkdownForBlogger(els.markdownInput.value || "");
+  const rawHtml = window.marked.parse(markdown, {
     breaks: true,
     gfm: true,
     mangle: false,
@@ -209,6 +210,44 @@ function convertMarkdownToHtml() {
 function loadHtmlIntoMarkdown() {
   els.markdownInput.value = htmlToPlainMarkdown(els.editor.innerHTML);
   showToast("Konten editor dimuat ke Markdown.");
+}
+
+function prepareMarkdownForBlogger(markdown) {
+  const lines = String(markdown || "").split(/\r?\n/);
+  const output = [];
+
+  lines.forEach((line, index) => {
+    const previous = lines[index - 1] || "";
+    const next = lines[index + 1] || "";
+    const startsTable = isMarkdownTableRow(line) && isMarkdownTableDivider(next);
+    const endsTable = isMarkdownTableRow(previous) && !isMarkdownTableRow(line);
+
+    if (startsTable && output.length && output[output.length - 1].trim()) {
+      output.push("");
+    }
+
+    if (endsTable && output.length && output[output.length - 1].trim()) {
+      output.push("");
+    }
+
+    output.push(line);
+  });
+
+  return output.join("\n");
+}
+
+function isMarkdownTableRow(line) {
+  const value = line.trim();
+  return value.startsWith("|") && value.endsWith("|") && value.split("|").length > 3;
+}
+
+function isMarkdownTableDivider(line) {
+  const value = line.trim();
+  if (!isMarkdownTableRow(value)) return false;
+  return value
+    .slice(1, -1)
+    .split("|")
+    .every((cell) => /^:?-{3,}:?$/.test(cell.trim()));
 }
 
 function handleChange() {
