@@ -212,6 +212,12 @@ select {
   display: block;
 }
 
+#previewView.is-visible,
+#settingsView.is-visible {
+  height: calc(100vh - 126px);
+  overflow: auto;
+}
+
 .editor-grid {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr) 330px;
@@ -537,6 +543,7 @@ select {
 
 .preview-article {
   max-width: 900px;
+  min-height: 100%;
   padding: 34px;
   line-height: 1.75;
 }
@@ -624,6 +631,12 @@ select {
 
   .editor-grid {
     grid-template-columns: 1fr;
+  }
+
+  #previewView.is-visible,
+  #settingsView.is-visible {
+    height: auto;
+    overflow: visible;
   }
 
   .workspace {
