@@ -104,6 +104,30 @@
               <input id="labelsInput" type="text" placeholder="SEO, Teknologi, Blogger">
             </label>
 
+            <div class="field-group">
+              <label class="field">
+                <span>Lokasi</span>
+                <input id="locationNameInput" type="text" placeholder="Jakarta, Indonesia">
+              </label>
+
+              <div class="split-fields">
+                <label class="field">
+                  <span>Latitude</span>
+                  <input id="locationLatInput" type="number" step="any" min="-90" max="90" placeholder="-6.200000">
+                </label>
+
+                <label class="field">
+                  <span>Longitude</span>
+                  <input id="locationLngInput" type="number" step="any" min="-180" max="180" placeholder="106.816666">
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Map Span</span>
+                <input id="locationSpanInput" type="text" placeholder="0.05,0.05">
+              </label>
+            </div>
+
             <label class="field">
               <span>Status</span>
               <select id="statusInput">
@@ -135,6 +159,7 @@
       <section class="view" id="previewView">
         <article class="preview-article">
           <p class="preview-label" id="previewLabels"></p>
+          <p class="preview-location" id="previewLocation"></p>
           <h2 id="previewTitle">Judul artikel</h2>
           <p class="preview-excerpt" id="previewExcerpt"></p>
           <div id="previewContent"></div>

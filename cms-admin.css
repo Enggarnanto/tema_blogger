@@ -306,6 +306,20 @@ select {
   resize: vertical;
 }
 
+.field-group {
+  margin-bottom: 16px;
+}
+
+.split-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.split-fields .field {
+  margin-bottom: 16px;
+}
+
 .post-list {
   display: grid;
   gap: 8px;
@@ -437,6 +451,12 @@ select {
   letter-spacing: 0.08em;
 }
 
+.preview-location {
+  margin: 4px 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .preview-excerpt {
   color: #4e5a64;
   font-size: 18px;
@@ -534,5 +554,10 @@ select {
   .editor {
     min-height: 380px;
     padding: 16px;
+  }
+
+  .split-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }

@@ -7,6 +7,10 @@ type CmsPost = {
   content_html: string;
   excerpt?: string;
   labels?: string[];
+  location_name?: string | null;
+  location_lat?: number | string | null;
+  location_lng?: number | string | null;
+  location_span?: string | null;
   status?: "draft" | "published" | "scheduled";
   publish_at?: string | null;
   blogger_post_id?: string | null;
@@ -45,6 +49,7 @@ Deno.serve(async (req) => {
       title: post.title,
       content: post.content_html,
       labels: post.labels || [],
+      location: buildBloggerLocation(post),
       customMetaData: JSON.stringify({
         slug: post.slug || "",
         excerpt: post.excerpt || "",
@@ -127,6 +132,28 @@ async function getGoogleAccessToken() {
 function validatePost(post: CmsPost) {
   if (!post.title?.trim()) throw new Error("Title is required");
   if (!post.content_html?.trim()) throw new Error("Content is required");
+}
+
+function buildBloggerLocation(post: CmsPost) {
+  const name = post.location_name?.trim() || "";
+  const lat = parseOptionalNumber(post.location_lat);
+  const lng = parseOptionalNumber(post.location_lng);
+  const span = post.location_span?.trim() || "";
+
+  if (!name && lat === null && lng === null && !span) return undefined;
+
+  return {
+    ...(name ? { name } : {}),
+    ...(lat !== null ? { lat } : {}),
+    ...(lng !== null ? { lng } : {}),
+    ...(span ? { span } : {}),
+  };
+}
+
+function parseOptionalNumber(value: number | string | null | undefined) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
 function requiredEnv(name: string) {
