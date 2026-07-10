@@ -766,6 +766,16 @@ select {
   line-height: 1.65;
 }
 
+.readme-grid code {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #f8fafb;
+  color: var(--ink);
+  padding: 2px 5px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
 .auth-box {
   margin-top: 22px;
   padding-top: 18px;

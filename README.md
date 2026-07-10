@@ -51,6 +51,28 @@ URL CMS:
 https://USERNAME.github.io/NAMA_REPO/cms-admin.html
 ```
 
+## Update / Pull Project
+
+Kalau project sudah pernah di-clone dan ingin mengambil update terbaru dari GitHub:
+
+```bash
+git pull origin main
+```
+
+Kalau ada perubahan lokal, cek dulu:
+
+```bash
+git status --short --branch
+```
+
+Kalau lokal punya commit yang belum dikirim ke GitHub:
+
+```bash
+git push origin main
+```
+
+Setelah push, tunggu GitHub Pages deploy ulang beberapa saat lalu refresh halaman CMS.
+
 ## Konfigurasi CMS
 
 Edit `cms-config.js`:
