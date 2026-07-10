@@ -11,6 +11,7 @@ Thumbs.db
 
 # Local notes and large/demo theme file
 *.md
+!README.md
 tema_seopro_demo.html
 
 # Dependencies/build output if this project grows later
