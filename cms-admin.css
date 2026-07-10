@@ -310,6 +310,60 @@ select {
   margin-bottom: 16px;
 }
 
+.mode-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 2px 0 12px;
+}
+
+.mode-tab {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 11px;
+  font-size: 13px;
+}
+
+.mode-tab:hover,
+.mode-tab.is-active {
+  border-color: rgba(15, 118, 110, 0.55);
+  background: #f1faf8;
+  color: var(--ink);
+}
+
+.markdown-panel {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.markdown-panel[hidden] {
+  display: none;
+}
+
+.markdown-panel textarea {
+  width: 100%;
+  min-height: 320px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  resize: vertical;
+  background: #fbfcfd;
+  color: var(--ink);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  line-height: 1.65;
+}
+
+.markdown-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .post-list {
   display: grid;
   gap: 8px;

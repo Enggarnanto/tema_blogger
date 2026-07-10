@@ -2,6 +2,18 @@ const STORAGE_KEY = "blog_cms_current_post";
 const STORAGE_POSTS_KEY = "blog_cms_posts";
 const SETTINGS_KEY = "blog_cms_settings";
 const EXCERPT_MAX_LENGTH = 150;
+const ALLOWED_HTML_TAGS = new Set([
+  "a", "blockquote", "br", "code", "del", "div", "em", "figcaption", "figure",
+  "h1", "h2", "h3", "h4", "h5", "h6", "hr", "img", "li", "ol", "p", "pre",
+  "span", "strong", "table", "tbody", "td", "th", "thead", "tr", "u", "ul"
+]);
+const ALLOWED_HTML_ATTRIBUTES = {
+  a: new Set(["href", "title", "target", "rel"]),
+  img: new Set(["src", "alt", "title", "width", "height"]),
+  table: new Set(["border"]),
+  td: new Set(["colspan", "rowspan"]),
+  th: new Set(["colspan", "rowspan"])
+};
 const DEFAULT_SETTINGS = {
   supabaseUrl: normalizeSupabaseUrl(window.CMS_CONFIG?.supabaseUrl || ""),
   supabaseAnon: window.CMS_CONFIG?.supabaseAnon || "",
@@ -21,6 +33,9 @@ const els = {
   title: document.getElementById("titleInput"),
   slug: document.getElementById("slugInput"),
   editor: document.getElementById("contentEditor"),
+  toolbar: document.querySelector(".toolbar"),
+  markdownPanel: document.getElementById("markdownPanel"),
+  markdownInput: document.getElementById("markdownInput"),
   excerpt: document.getElementById("excerptInput"),
   excerptCount: document.getElementById("excerptCount"),
   excerptWarning: document.getElementById("excerptWarning"),
@@ -70,7 +85,13 @@ function bindEvents() {
     button.addEventListener("click", () => runCommand(button.dataset.command, button.dataset.value));
   });
 
+  document.querySelectorAll("[data-editor-mode]").forEach((button) => {
+    button.addEventListener("click", () => switchEditorMode(button.dataset.editorMode));
+  });
+
   document.getElementById("imageBtn").addEventListener("click", insertImage);
+  document.getElementById("convertMarkdownBtn").addEventListener("click", convertMarkdownToHtml);
+  document.getElementById("loadHtmlToMarkdownBtn").addEventListener("click", loadHtmlIntoMarkdown);
   document.getElementById("newPostBtn").addEventListener("click", newPost);
   document.getElementById("saveDraftBtn").addEventListener("click", saveDraft);
   document.getElementById("deletePostBtn").addEventListener("click", deletePost);
@@ -100,6 +121,9 @@ function bindEvents() {
 
   els.editor.addEventListener("input", handleChange);
   els.editor.addEventListener("paste", pasteAsCleanHtml);
+  els.markdownInput.addEventListener("input", () => {
+    els.saveState.textContent = "Markdown belum dikonversi.";
+  });
 }
 
 function switchView(viewName) {
@@ -115,6 +139,21 @@ function switchView(viewName) {
 
   if (viewName === "preview") {
     renderPreview();
+  }
+}
+
+function switchEditorMode(mode) {
+  document.querySelectorAll("[data-editor-mode]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.editorMode === mode);
+  });
+
+  const isMarkdown = mode === "markdown";
+  els.markdownPanel.hidden = !isMarkdown;
+  els.toolbar.hidden = isMarkdown;
+  els.editor.hidden = isMarkdown;
+
+  if (isMarkdown && !els.markdownInput.value.trim()) {
+    els.markdownInput.value = htmlToPlainMarkdown(els.editor.innerHTML);
   }
 }
 
@@ -144,6 +183,31 @@ function pasteAsCleanHtml(event) {
   event.preventDefault();
   const text = event.clipboardData.getData("text/plain");
   document.execCommand("insertText", false, text);
+}
+
+function convertMarkdownToHtml() {
+  if (!window.marked?.parse) {
+    showToast("Markdown parser belum siap. Refresh halaman lalu coba lagi.");
+    return;
+  }
+
+  const rawHtml = window.marked.parse(els.markdownInput.value || "", {
+    breaks: true,
+    gfm: true,
+    mangle: false,
+    headerIds: false
+  });
+  const cleanHtml = sanitizeEditorHtml(rawHtml);
+
+  els.editor.innerHTML = cleanHtml || "<p></p>";
+  switchEditorMode("html");
+  handleChange();
+  showToast("Markdown sudah dikonversi ke HTML bersih.");
+}
+
+function loadHtmlIntoMarkdown() {
+  els.markdownInput.value = htmlToPlainMarkdown(els.editor.innerHTML);
+  showToast("Konten editor dimuat ke Markdown.");
 }
 
 function handleChange() {
@@ -662,11 +726,42 @@ function sanitizeEditorHtml(html) {
   template.innerHTML = html;
   template.content.querySelectorAll("script, iframe, object, embed").forEach((node) => node.remove());
   template.content.querySelectorAll("*").forEach((node) => {
+    const tagName = node.tagName.toLowerCase();
+    if (!ALLOWED_HTML_TAGS.has(tagName)) {
+      node.replaceWith(...node.childNodes);
+      return;
+    }
+
+    const allowedAttributes = ALLOWED_HTML_ATTRIBUTES[tagName] || new Set();
     [...node.attributes].forEach((attribute) => {
-      if (attribute.name.startsWith("on")) node.removeAttribute(attribute.name);
+      const attributeName = attribute.name.toLowerCase();
+      if (attributeName.startsWith("on") || attributeName === "style" || !allowedAttributes.has(attributeName)) {
+        node.removeAttribute(attribute.name);
+      }
     });
+
+    cleanSafeUrlAttribute(node, "href");
+    cleanSafeUrlAttribute(node, "src");
+
+    if (tagName === "a" && node.getAttribute("target") === "_blank") {
+      node.setAttribute("rel", "noopener noreferrer");
+    }
   });
   return template.innerHTML.trim();
+}
+
+function cleanSafeUrlAttribute(node, attributeName) {
+  const value = node.getAttribute(attributeName);
+  if (!value) return;
+
+  const safe = /^(https?:|mailto:|tel:|\/|#)/i.test(value);
+  if (!safe) node.removeAttribute(attributeName);
+}
+
+function htmlToPlainMarkdown(html) {
+  const template = document.createElement("template");
+  template.innerHTML = sanitizeEditorHtml(html || "");
+  return template.content.textContent.trim();
 }
 
 function stripHtml(html) {
