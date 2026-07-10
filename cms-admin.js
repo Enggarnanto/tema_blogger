@@ -1,6 +1,11 @@
 const STORAGE_KEY = "blog_cms_current_post";
 const STORAGE_POSTS_KEY = "blog_cms_posts";
 const SETTINGS_KEY = "blog_cms_settings";
+const DEFAULT_SETTINGS = {
+  supabaseUrl: normalizeSupabaseUrl(window.CMS_CONFIG?.supabaseUrl || ""),
+  supabaseAnon: window.CMS_CONFIG?.supabaseAnon || "",
+  functionUrl: window.CMS_CONFIG?.functionUrl || ""
+};
 
 const state = {
   post: emptyPost(),
@@ -552,10 +557,18 @@ function loadPosts() {
 
 function loadSettings() {
   try {
-    return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+    return mergeSettings(DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {});
   } catch {
-    return {};
+    return { ...DEFAULT_SETTINGS };
   }
+}
+
+function mergeSettings(defaults, saved) {
+  return {
+    supabaseUrl: saved.supabaseUrl || defaults.supabaseUrl,
+    supabaseAnon: saved.supabaseAnon || defaults.supabaseAnon,
+    functionUrl: saved.functionUrl || defaults.functionUrl
+  };
 }
 
 function emptyPost() {
