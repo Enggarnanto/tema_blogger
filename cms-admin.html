@@ -74,8 +74,9 @@
             </label>
 
             <div class="mode-tabs" aria-label="Mode penulisan">
-              <button class="mode-tab is-active" type="button" data-editor-mode="html">Editor HTML</button>
+              <button class="mode-tab is-active" type="button" data-editor-mode="visual">Editor Visual</button>
               <button class="mode-tab" type="button" data-editor-mode="markdown">Editor Teks</button>
+              <button class="mode-tab" type="button" data-editor-mode="html">Kode HTML</button>
             </div>
 
             <div class="markdown-panel" id="markdownPanel" hidden>
@@ -83,6 +84,14 @@
               <div class="markdown-actions">
                 <button class="button ghost" type="button" id="loadHtmlToMarkdownBtn">Ambil dari Editor</button>
                 <button class="button primary" type="button" id="convertMarkdownBtn">Convert ke HTML</button>
+              </div>
+            </div>
+
+            <div class="html-code-panel" id="htmlCodePanel" hidden>
+              <textarea id="htmlCodeInput" spellcheck="false" placeholder="<h2>Judul bagian</h2>&#10;<p>Konten artikel...</p>"></textarea>
+              <div class="markdown-actions">
+                <button class="button ghost" type="button" id="refreshHtmlCodeBtn">Ambil dari Editor</button>
+                <button class="button primary" type="button" id="applyHtmlCodeBtn">Apply HTML</button>
               </div>
             </div>
 

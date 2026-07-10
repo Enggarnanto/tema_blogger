@@ -334,17 +334,20 @@ select {
   color: var(--ink);
 }
 
-.markdown-panel {
+.markdown-panel,
+.html-code-panel {
   display: grid;
   gap: 10px;
   margin-bottom: 12px;
 }
 
-.markdown-panel[hidden] {
+.markdown-panel[hidden],
+.html-code-panel[hidden] {
   display: none;
 }
 
-.markdown-panel textarea {
+.markdown-panel textarea,
+.html-code-panel textarea {
   width: 100%;
   min-height: 320px;
   border: 1px solid var(--line);

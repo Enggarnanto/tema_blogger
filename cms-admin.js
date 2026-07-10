@@ -36,6 +36,8 @@ const els = {
   toolbar: document.querySelector(".toolbar"),
   markdownPanel: document.getElementById("markdownPanel"),
   markdownInput: document.getElementById("markdownInput"),
+  htmlCodePanel: document.getElementById("htmlCodePanel"),
+  htmlCodeInput: document.getElementById("htmlCodeInput"),
   excerpt: document.getElementById("excerptInput"),
   excerptCount: document.getElementById("excerptCount"),
   excerptWarning: document.getElementById("excerptWarning"),
@@ -92,6 +94,8 @@ function bindEvents() {
   document.getElementById("imageBtn").addEventListener("click", insertImage);
   document.getElementById("convertMarkdownBtn").addEventListener("click", convertMarkdownToHtml);
   document.getElementById("loadHtmlToMarkdownBtn").addEventListener("click", loadHtmlIntoMarkdown);
+  document.getElementById("applyHtmlCodeBtn").addEventListener("click", applyHtmlCode);
+  document.getElementById("refreshHtmlCodeBtn").addEventListener("click", refreshHtmlCode);
   document.getElementById("newPostBtn").addEventListener("click", newPost);
   document.getElementById("saveDraftBtn").addEventListener("click", saveDraft);
   document.getElementById("deletePostBtn").addEventListener("click", deletePost);
@@ -124,6 +128,9 @@ function bindEvents() {
   els.markdownInput.addEventListener("input", () => {
     els.saveState.textContent = "Markdown belum dikonversi.";
   });
+  els.htmlCodeInput.addEventListener("input", () => {
+    els.saveState.textContent = "Kode HTML belum di-apply.";
+  });
 }
 
 function switchView(viewName) {
@@ -147,13 +154,20 @@ function switchEditorMode(mode) {
     button.classList.toggle("is-active", button.dataset.editorMode === mode);
   });
 
+  const isVisual = mode === "visual";
   const isMarkdown = mode === "markdown";
+  const isHtml = mode === "html";
   els.markdownPanel.hidden = !isMarkdown;
-  els.toolbar.hidden = isMarkdown;
-  els.editor.hidden = isMarkdown;
+  els.htmlCodePanel.hidden = !isHtml;
+  els.toolbar.hidden = !isVisual;
+  els.editor.hidden = !isVisual;
 
   if (isMarkdown && !els.markdownInput.value.trim()) {
     els.markdownInput.value = htmlToPlainMarkdown(els.editor.innerHTML);
+  }
+
+  if (isHtml) {
+    refreshHtmlCode();
   }
 }
 
@@ -202,7 +216,8 @@ function convertMarkdownToHtml() {
   const cleanHtml = sanitizeEditorHtml(rawHtml);
 
   els.editor.innerHTML = cleanHtml || "<p></p>";
-  switchEditorMode("html");
+  els.htmlCodeInput.value = formatHtmlCode(els.editor.innerHTML);
+  switchEditorMode("visual");
   handleChange();
   showToast("Markdown sudah dikonversi ke HTML bersih.");
 }
@@ -210,6 +225,19 @@ function convertMarkdownToHtml() {
 function loadHtmlIntoMarkdown() {
   els.markdownInput.value = htmlToPlainMarkdown(els.editor.innerHTML);
   showToast("Konten editor dimuat ke Markdown.");
+}
+
+function applyHtmlCode() {
+  const cleanHtml = sanitizeEditorHtml(els.htmlCodeInput.value || "");
+  els.editor.innerHTML = cleanHtml || "<p></p>";
+  els.htmlCodeInput.value = formatHtmlCode(cleanHtml);
+  switchEditorMode("visual");
+  handleChange();
+  showToast("Kode HTML sudah di-apply.");
+}
+
+function refreshHtmlCode() {
+  els.htmlCodeInput.value = formatHtmlCode(sanitizeEditorHtml(els.editor.innerHTML));
 }
 
 function prepareMarkdownForBlogger(markdown) {
@@ -807,6 +835,12 @@ function cleanSafeUrlAttribute(node, attributeName) {
 
   const safe = /^(https?:|mailto:|tel:|\/|#)/i.test(value);
   if (!safe) node.removeAttribute(attributeName);
+}
+
+function formatHtmlCode(html) {
+  return String(html || "")
+    .replace(/></g, ">\n<")
+    .trim();
 }
 
 function htmlToPlainMarkdown(html) {
