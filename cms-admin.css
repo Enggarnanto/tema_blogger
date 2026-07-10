@@ -20,6 +20,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: Inter, "Segoe UI", Arial, sans-serif;
+  overflow: hidden;
 }
 
 button,
@@ -30,9 +31,10 @@ select {
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100vh;
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
+  overflow: hidden;
 }
 
 .sidebar {
@@ -42,6 +44,7 @@ select {
   display: flex;
   flex-direction: column;
   gap: 26px;
+  min-height: 0;
 }
 
 .brand {
@@ -118,15 +121,23 @@ select {
 
 .workspace {
   min-width: 0;
+  min-height: 0;
   padding: 26px;
+  overflow: auto;
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 22px;
+  margin: -26px -26px 22px;
+  padding: 26px;
+  background: var(--bg);
+  border-bottom: 1px solid rgba(217, 224, 230, 0.75);
 }
 
 .topbar h1,
@@ -226,10 +237,17 @@ select {
   padding: 18px;
 }
 
+.editor-panel {
+  height: calc(100vh - 126px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .post-panel {
   position: sticky;
-  top: 18px;
-  max-height: calc(100vh - 52px);
+  top: 0;
+  max-height: calc(100vh - 126px);
   display: flex;
   flex-direction: column;
 }
@@ -336,7 +354,10 @@ select {
 
 .markdown-panel,
 .html-code-panel {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -349,7 +370,7 @@ select {
 .markdown-panel textarea,
 .html-code-panel textarea {
   width: 100%;
-  min-height: 320px;
+  min-height: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 16px;
@@ -419,6 +440,7 @@ select {
 }
 
 .toolbar {
+  flex: 0 0 auto;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -443,7 +465,9 @@ select {
 }
 
 .editor {
-  min-height: 520px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   border: 1px solid var(--line);
   border-top: 0;
   border-radius: 0 0 8px 8px;
@@ -572,8 +596,15 @@ select {
 }
 
 @media (max-width: 980px) {
+  body {
+    overflow: auto;
+  }
+
   .app-shell {
+    height: auto;
+    min-height: 100vh;
     grid-template-columns: 1fr;
+    overflow: visible;
   }
 
   .sidebar {
@@ -595,6 +626,39 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .workspace {
+    overflow: visible;
+  }
+
+  .topbar {
+    margin: -26px -26px 22px;
+  }
+
+  .editor-panel {
+    height: auto;
+  }
+
+  .markdown-panel,
+  .html-code-panel {
+    display: grid;
+    grid-template-rows: auto auto;
+  }
+
+  .markdown-panel[hidden],
+  .html-code-panel[hidden] {
+    display: none;
+  }
+
+  .markdown-panel textarea,
+  .html-code-panel textarea {
+    min-height: 320px;
+  }
+
+  .editor {
+    min-height: 520px;
+    overflow: visible;
+  }
+
   .post-panel {
     position: static;
     max-height: none;
@@ -611,6 +675,8 @@ select {
   }
 
   .topbar {
+    margin: -16px -16px 22px;
+    padding: 16px;
     align-items: flex-start;
     flex-direction: column;
   }
