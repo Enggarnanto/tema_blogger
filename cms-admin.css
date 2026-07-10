@@ -334,6 +334,12 @@ select {
   margin-bottom: 16px;
 }
 
+.post-filters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
 .mode-tabs {
   display: flex;
   gap: 6px;
@@ -542,10 +548,24 @@ select {
 }
 
 .preview-article {
-  max-width: 900px;
+  max-width: none;
   min-height: 100%;
   padding: 34px;
   line-height: 1.75;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 100%;
+}
+
+.preview-article h1 {
+  max-width: 780px;
+  font-size: 36px;
+  line-height: 1.12;
 }
 
 .preview-label {
@@ -564,6 +584,77 @@ select {
 .preview-excerpt {
   color: #4e5a64;
   font-size: 18px;
+  max-width: 760px;
+}
+
+.feed-panel {
+  background: #172126;
+  border-radius: 8px;
+  color: #f6faf9;
+  padding: 18px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.feed-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.feed-panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.feed-panel-head span {
+  color: #b8c4ca;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.feed-list {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.feed-item {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #223038;
+  color: #f6faf9;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  text-align: left;
+  text-decoration: none;
+}
+
+.feed-item:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: #2b3b44;
+}
+
+.feed-item strong,
+.feed-item span,
+.feed-item small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feed-item span,
+.feed-item small {
+  color: #b8c4ca;
+  font-size: 12px;
 }
 
 .settings-panel {
@@ -631,6 +722,14 @@ select {
 
   .editor-grid {
     grid-template-columns: 1fr;
+  }
+
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feed-panel {
+    min-height: auto;
   }
 
   #previewView.is-visible,

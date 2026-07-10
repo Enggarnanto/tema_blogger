@@ -59,6 +59,25 @@
               <input id="searchInput" type="search" placeholder="Judul, label, status">
             </label>
 
+            <div class="post-filters">
+              <label class="field compact">
+                <span>Status</span>
+                <select id="statusFilterInput">
+                  <option value="">Semua status</option>
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                  <option value="scheduled">Scheduled</option>
+                </select>
+              </label>
+
+              <label class="field compact">
+                <span>Kategori</span>
+                <select id="categoryFilterInput">
+                  <option value="">Semua kategori</option>
+                </select>
+              </label>
+            </div>
+
             <div class="post-list" id="postList" aria-label="Daftar artikel"></div>
           </aside>
 
@@ -167,13 +186,23 @@
       </section>
 
       <section class="view" id="previewView">
-        <article class="preview-article">
-          <p class="preview-label" id="previewLabels"></p>
-          <p class="preview-location" id="previewLocation"></p>
-          <h1 id="previewTitle">Judul artikel</h1>
-          <p class="preview-excerpt" id="previewExcerpt"></p>
-          <div id="previewContent"></div>
-        </article>
+        <div class="preview-grid">
+          <article class="preview-article">
+            <p class="preview-label" id="previewLabels"></p>
+            <p class="preview-location" id="previewLocation"></p>
+            <h1 id="previewTitle">Judul artikel</h1>
+            <p class="preview-excerpt" id="previewExcerpt"></p>
+            <div id="previewContent"></div>
+          </article>
+
+          <aside class="feed-panel">
+            <div class="feed-panel-head">
+              <h2>Feed Uploaded</h2>
+              <span id="feedCount">0 published</span>
+            </div>
+            <div class="feed-list" id="feedList" aria-label="Feed yang berhasil diupload"></div>
+          </aside>
+        </div>
       </section>
 
       <section class="view" id="settingsView">

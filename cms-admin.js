@@ -37,6 +37,8 @@ const els = {
   postList: document.getElementById("postList"),
   postCount: document.getElementById("postCount"),
   search: document.getElementById("searchInput"),
+  statusFilter: document.getElementById("statusFilterInput"),
+  categoryFilter: document.getElementById("categoryFilterInput"),
   title: document.getElementById("titleInput"),
   slug: document.getElementById("slugInput"),
   editor: document.getElementById("contentEditor"),
@@ -60,6 +62,8 @@ const els = {
   previewLabels: document.getElementById("previewLabels"),
   previewLocation: document.getElementById("previewLocation"),
   previewContent: document.getElementById("previewContent"),
+  feedList: document.getElementById("feedList"),
+  feedCount: document.getElementById("feedCount"),
   locationName: document.getElementById("locationNameInput"),
   connectionDot: document.getElementById("connectionDot"),
   connectionText: document.getElementById("connectionText"),
@@ -114,6 +118,8 @@ function bindEvents() {
   document.getElementById("logoutBtn").addEventListener("click", logout);
 
   els.search.addEventListener("input", renderPostList);
+  els.statusFilter.addEventListener("change", renderPostList);
+  els.categoryFilter.addEventListener("change", renderPostList);
 
   [els.title, els.slug, els.excerpt, els.labels, els.status, els.publishAt, els.locationName].forEach((input) => {
     input.addEventListener("input", handleChange);
@@ -431,6 +437,7 @@ async function publishPost() {
     await upsertSupabasePost(state.post, { silent: true });
     fillForm(state.post);
     renderPostList();
+    renderFeeds();
     showToast("Artikel berhasil dikirim ke Blogger.");
   } catch (error) {
     showToast(error.message);
@@ -516,6 +523,7 @@ async function loadSupabasePosts() {
   persistPost();
   renderPostList();
   renderPreview();
+  renderFeeds();
   refreshStats();
   showToast(`${data.length} artikel dimuat dari Supabase.`);
 }
@@ -560,11 +568,18 @@ async function deleteSupabasePost(id, options = {}) {
 
 function renderPostList() {
   const query = (els.search.value || "").toLowerCase().trim();
+  const statusFilter = els.statusFilter.value;
+  const categoryFilter = els.categoryFilter.value;
+  renderCategoryFilter();
+
   const posts = state.posts
     .map(normalizePost)
     .filter((post) => {
       const text = `${post.title} ${post.slug} ${post.status} ${(post.labels || []).join(" ")}`.toLowerCase();
-      return !query || text.includes(query);
+      const matchesSearch = !query || text.includes(query);
+      const matchesStatus = !statusFilter || post.status === statusFilter;
+      const matchesCategory = !categoryFilter || (post.labels || []).includes(categoryFilter);
+      return matchesSearch && matchesStatus && matchesCategory;
     })
     .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
 
@@ -594,6 +609,23 @@ function renderPostList() {
   });
 }
 
+function renderCategoryFilter() {
+  const selected = els.categoryFilter.value;
+  const categories = [...new Set(
+    state.posts.flatMap((post) => normalizePost(post).labels || [])
+  )].sort((a, b) => a.localeCompare(b, "id-ID"));
+
+  els.categoryFilter.innerHTML = `<option value="">Semua kategori</option>`;
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    els.categoryFilter.appendChild(option);
+  });
+
+  els.categoryFilter.value = categories.includes(selected) ? selected : "";
+}
+
 function selectPost(id) {
   const post = state.posts.find((item) => item.id === id);
   if (!post) return;
@@ -613,6 +645,45 @@ function renderPreview() {
   els.previewLabels.textContent = (state.post.labels || []).join(" / ");
   els.previewLocation.textContent = formatLocationLabel(state.post);
   els.previewContent.innerHTML = state.post.content_html || "";
+  renderFeeds();
+}
+
+function renderFeeds() {
+  const feeds = state.posts
+    .map(normalizePost)
+    .filter((post) => post.status === "published" || post.blogger_url || post.blogger_post_id)
+    .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
+
+  els.feedCount.textContent = `${feeds.length} published`;
+  els.feedList.innerHTML = "";
+
+  if (!feeds.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-list";
+    empty.textContent = "Belum ada feed uploaded.";
+    els.feedList.appendChild(empty);
+    return;
+  }
+
+  feeds.forEach((post) => {
+    const item = document.createElement(post.blogger_url ? "a" : "button");
+    item.className = "feed-item";
+    if (post.blogger_url) {
+      item.href = post.blogger_url;
+      item.target = "_blank";
+      item.rel = "noopener noreferrer";
+    } else {
+      item.type = "button";
+      item.addEventListener("click", () => selectPost(post.id));
+    }
+
+    item.innerHTML = `
+      <strong>${escapeHtml(post.title || "Untitled")}</strong>
+      <span>${escapeHtml((post.labels || []).slice(0, 2).join(", ") || "Tanpa kategori")}</span>
+      <small>${escapeHtml(formatDate(post.updated_at))}</small>
+    `;
+    els.feedList.appendChild(item);
+  });
 }
 
 function refreshStats() {
