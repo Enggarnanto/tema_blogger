@@ -4,7 +4,7 @@ const SETTINGS_KEY = "blog_cms_settings";
 const EXCERPT_MAX_LENGTH = 150;
 const ALLOWED_HTML_TAGS = new Set([
   "a", "blockquote", "br", "code", "del", "div", "em", "figcaption", "figure",
-  "h1", "h2", "h3", "h4", "h5", "h6", "hr", "img", "li", "ol", "p", "pre",
+  "h2", "h3", "h4", "hr", "img", "li", "ol", "p", "pre",
   "span", "strong", "table", "tbody", "td", "th", "thead", "tr", "u", "ul"
 ]);
 const ALLOWED_HTML_ATTRIBUTES = {
@@ -164,6 +164,7 @@ function runCommand(command, value) {
     if (!url) return;
     document.execCommand("createLink", false, url);
   } else if (command === "formatBlock") {
+    if (!["h2", "h3", "h4"].includes(value)) return;
     document.execCommand("formatBlock", false, value);
   } else {
     document.execCommand(command, false, value || null);
@@ -725,6 +726,7 @@ function sanitizeEditorHtml(html) {
   const template = document.createElement("template");
   template.innerHTML = html;
   template.content.querySelectorAll("script, iframe, object, embed").forEach((node) => node.remove());
+  normalizeBodyHeadings(template.content);
   template.content.querySelectorAll("*").forEach((node) => {
     const tagName = node.tagName.toLowerCase();
     if (!ALLOWED_HTML_TAGS.has(tagName)) {
@@ -748,6 +750,16 @@ function sanitizeEditorHtml(html) {
     }
   });
   return template.innerHTML.trim();
+}
+
+function normalizeBodyHeadings(root) {
+  root.querySelectorAll("h1, h5, h6").forEach((heading) => {
+    const sourceLevel = Number(heading.tagName.slice(1));
+    const targetLevel = sourceLevel === 1 ? 2 : 4;
+    const replacement = document.createElement(`h${targetLevel}`);
+    replacement.innerHTML = heading.innerHTML;
+    heading.replaceWith(replacement);
+  });
 }
 
 function cleanSafeUrlAttribute(node, attributeName) {

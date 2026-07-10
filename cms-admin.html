@@ -74,12 +74,12 @@
             </label>
 
             <div class="mode-tabs" aria-label="Mode penulisan">
-              <button class="mode-tab is-active" type="button" data-editor-mode="html">HTML Editor</button>
-              <button class="mode-tab" type="button" data-editor-mode="markdown">Markdown</button>
+              <button class="mode-tab is-active" type="button" data-editor-mode="html">Editor HTML</button>
+              <button class="mode-tab" type="button" data-editor-mode="markdown">Editor Teks</button>
             </div>
 
             <div class="markdown-panel" id="markdownPanel" hidden>
-              <textarea id="markdownInput" spellcheck="true" placeholder="# Judul&#10;&#10;Tulis artikel dengan **Markdown** di sini."></textarea>
+              <textarea id="markdownInput" spellcheck="true" placeholder="## Judul bagian&#10;&#10;Tulis artikel dengan **Markdown** di sini."></textarea>
               <div class="markdown-actions">
                 <button class="button ghost" type="button" id="loadHtmlToMarkdownBtn">Ambil dari Editor</button>
                 <button class="button primary" type="button" id="convertMarkdownBtn">Convert ke HTML</button>
@@ -92,6 +92,7 @@
               <button type="button" data-command="underline" title="Underline"><u>U</u></button>
               <button type="button" data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
               <button type="button" data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
+              <button type="button" data-command="formatBlock" data-value="h4" title="Heading 4">H4</button>
               <button type="button" data-command="insertUnorderedList" title="Bullet list">UL</button>
               <button type="button" data-command="insertOrderedList" title="Numbered list">1.</button>
               <button type="button" data-command="createLink" title="Link">A</button>
@@ -156,7 +157,7 @@
         <article class="preview-article">
           <p class="preview-label" id="previewLabels"></p>
           <p class="preview-location" id="previewLocation"></p>
-          <h2 id="previewTitle">Judul artikel</h2>
+          <h1 id="previewTitle">Judul artikel</h1>
           <p class="preview-excerpt" id="previewExcerpt"></p>
           <div id="previewContent"></div>
         </article>

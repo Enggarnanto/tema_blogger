@@ -131,7 +131,7 @@ select {
 
 .topbar h1,
 .settings-panel h2,
-.preview-article h2 {
+.preview-article h1 {
   margin: 0;
   letter-spacing: 0;
 }
