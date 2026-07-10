@@ -1,0 +1,20 @@
+# Local editor and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local env/secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies/build output if this project grows later
+node_modules/
+dist/
+build/
+.cache/
+
+# Supabase local runtime
+supabase/.branches/
+supabase/.temp/

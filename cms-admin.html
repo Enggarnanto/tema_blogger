@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog CMS Editor</title>
+  <link rel="stylesheet" href="./cms-admin.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">CMS</span>
+        <div>
+          <strong>Blog Publisher</strong>
+          <small>Supabase to Blogger</small>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="CMS navigation">
+        <button class="nav-item is-active" type="button" data-view="editor">Editor</button>
+        <button class="nav-item" type="button" data-view="preview">Preview</button>
+        <button class="nav-item" type="button" data-view="settings">Settings</button>
+      </nav>
+
+      <div class="status-panel">
+        <span class="status-dot" id="connectionDot"></span>
+        <span id="connectionText">Local draft mode</span>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <h1>Editor Artikel</h1>
+          <p id="saveState">Belum ada perubahan tersimpan.</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="button ghost" type="button" id="newPostBtn">New</button>
+          <button class="button ghost" type="button" id="saveDraftBtn">Save Draft</button>
+          <button class="button danger" type="button" id="deletePostBtn">Delete</button>
+          <button class="button primary" type="button" id="publishBtn">Publish</button>
+        </div>
+      </header>
+
+      <section class="view is-visible" id="editorView">
+        <div class="editor-grid">
+          <aside class="post-panel">
+            <div class="post-panel-head">
+              <div>
+                <h2>Artikel</h2>
+                <p id="postCount">0 post</p>
+              </div>
+              <button class="icon-button" type="button" id="syncPostsBtn" title="Sync Supabase">Sync</button>
+            </div>
+
+            <label class="field compact">
+              <span>Cari</span>
+              <input id="searchInput" type="search" placeholder="Judul, label, status">
+            </label>
+
+            <div class="post-list" id="postList" aria-label="Daftar artikel"></div>
+          </aside>
+
+          <section class="editor-panel">
+            <label class="field">
+              <span>Judul</span>
+              <input id="titleInput" type="text" placeholder="Tulis judul artikel">
+            </label>
+
+            <label class="field">
+              <span>Slug</span>
+              <input id="slugInput" type="text" placeholder="slug-artikel">
+            </label>
+
+            <div class="toolbar" aria-label="Editor toolbar">
+              <button type="button" data-command="bold" title="Bold"><strong>B</strong></button>
+              <button type="button" data-command="italic" title="Italic"><em>I</em></button>
+              <button type="button" data-command="underline" title="Underline"><u>U</u></button>
+              <button type="button" data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
+              <button type="button" data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
+              <button type="button" data-command="insertUnorderedList" title="Bullet list">UL</button>
+              <button type="button" data-command="insertOrderedList" title="Numbered list">1.</button>
+              <button type="button" data-command="createLink" title="Link">A</button>
+              <button type="button" id="imageBtn" title="Image">Img</button>
+              <button type="button" data-command="removeFormat" title="Clear format">Tx</button>
+            </div>
+
+            <div class="editor" id="contentEditor" contenteditable="true" spellcheck="true" aria-label="Konten artikel">
+              <p>Tulis artikel di sini...</p>
+            </div>
+          </section>
+
+          <aside class="meta-panel">
+            <label class="field">
+              <span>Excerpt</span>
+              <textarea id="excerptInput" rows="5" placeholder="Ringkasan singkat artikel"></textarea>
+            </label>
+
+            <label class="field">
+              <span>Labels</span>
+              <input id="labelsInput" type="text" placeholder="SEO, Teknologi, Blogger">
+            </label>
+
+            <label class="field">
+              <span>Status</span>
+              <select id="statusInput">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="scheduled">Scheduled</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Publish At</span>
+              <input id="publishAtInput" type="datetime-local">
+            </label>
+
+            <div class="metric-list">
+              <div>
+                <strong id="wordCount">0</strong>
+                <span>Words</span>
+              </div>
+              <div>
+                <strong id="charCount">0</strong>
+                <span>Chars</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="previewView">
+        <article class="preview-article">
+          <p class="preview-label" id="previewLabels"></p>
+          <h2 id="previewTitle">Judul artikel</h2>
+          <p class="preview-excerpt" id="previewExcerpt"></p>
+          <div id="previewContent"></div>
+        </article>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="settings-panel">
+          <h2>Supabase Settings</h2>
+          <p>Isi endpoint Edge Function publish kamu. Nilai ini disimpan lokal di browser untuk demo admin.</p>
+
+          <label class="field">
+            <span>Supabase URL</span>
+            <input id="supabaseUrlInput" type="url" placeholder="https://project-ref.supabase.co">
+          </label>
+
+          <label class="field">
+            <span>Anon Key</span>
+            <input id="supabaseAnonInput" type="password" placeholder="Supabase anon key">
+          </label>
+
+          <label class="field">
+            <span>Publish Function URL</span>
+            <input id="functionUrlInput" type="url" placeholder="https://project-ref.functions.supabase.co/publish-to-blogger">
+          </label>
+
+          <button class="button primary" type="button" id="saveSettingsBtn">Save Settings</button>
+          <button class="button ghost" type="button" id="loadSupabaseBtn">Load Posts</button>
+
+          <div class="auth-box">
+            <h3>Admin Login</h3>
+            <label class="field">
+              <span>Email</span>
+              <input id="emailInput" type="email" placeholder="admin@email.com">
+            </label>
+            <label class="field">
+              <span>Password</span>
+              <input id="passwordInput" type="password" placeholder="Password">
+            </label>
+            <div class="topbar-actions">
+              <button class="button primary" type="button" id="loginBtn">Login</button>
+              <button class="button ghost" type="button" id="logoutBtn">Logout</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./cms-admin.js"></script>
+</body>
+</html>
