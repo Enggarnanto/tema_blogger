@@ -9,6 +9,10 @@ Thumbs.db
 .env.*
 !.env.example
 
+# Local notes and large/demo theme file
+*.md
+tema_seopro_demo.html
+
 # Dependencies/build output if this project grows later
 node_modules/
 dist/
